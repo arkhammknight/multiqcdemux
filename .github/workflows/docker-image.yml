@@ -19,12 +19,20 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       
+      - name: Check if token exists
+        run: |
+          if [ -n "${{ secrets.PAT_TOKEN }}" ]; then
+            echo "Token exists"
+          else
+            echo "Token is empty"
+          fi
+      
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.PAT_TOKEN }}  # Changed to use PAT_TOKEN
+          password: ${{ secrets.PAT_TOKEN }}
       
       - name: Build and push
         uses: docker/build-push-action@v5
