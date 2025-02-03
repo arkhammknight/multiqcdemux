@@ -20,16 +20,15 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          password: ${{ secrets.GITHUB_TOKEN }}  # GITHUB_TOKEN'ın doğru yetkilendirilmiş olduğundan emin ol
 
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
           context: .
-    
           tags: |
             ghcr.io/${{ github.repository }}:latest
             ghcr.io/${{ github.repository }}:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          push: true
+          push: true  # Docker image'ı GHCR'ye itilecek
