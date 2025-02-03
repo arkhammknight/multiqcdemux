@@ -1,6 +1,5 @@
 name: Docker Build
 
-# Add permissions here
 permissions:
   contents: read
   packages: write
@@ -25,7 +24,7 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          password: ${{ secrets.PAT_TOKEN }}  # Changed to use PAT_TOKEN
       
       - name: Build and push
         uses: docker/build-push-action@v5
