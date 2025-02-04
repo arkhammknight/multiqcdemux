@@ -2,7 +2,12 @@
 
 nextflow.enable.dsl = 2
 
+params.outdir = 'results'
+
 process run_r_script {
+    publishDir "${params.outdir}", mode: 'copy'
+    container 'ghcr.io/arkhammknight/multiqcdemux:latest'
+
     input:
     path sample_sheet
     path demux_stats
@@ -34,25 +39,6 @@ process run_r_script {
     """
 }
 
-process run_multiqc {
-    container 'ewels/multiqc:latest'
-
-    input:
-    path '*'
-
-    output:
-    path "multiqc_report.html", emit: report, optional: true
-
-    script:
-    """
-    echo "Contents of current directory:"
-    ls -la
-    multiqc .
-    echo "Contents of directory after MultiQC:"
-    ls -la
-    """
-}
-
 workflow {
     // Input channels
     ch_samples = Channel.fromPath("../Reports/SampleSheet.csv")
@@ -61,12 +47,4 @@ workflow {
     
     // Run R script
     run_r_script(ch_samples, ch_stats, ch_run_info)
-    
-    // Collect all outputs from run_r_script and include input files
-    ch_multiqc_input = run_r_script.out.reports.mix(run_r_script.out.log)
-        .mix(ch_samples, ch_stats, ch_run_info)
-        .collect()
-    
-    // Run MultiQC
-    run_multiqc(ch_multiqc_input)
 }
